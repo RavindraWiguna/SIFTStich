@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Image Stitching Web App</title>
+  <style>
+    /* Add some basic CSS styles */
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 100px;
+    }
+  </style>
+</head>
+<body>
+    <h1>Image Stitching Web App</h1>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class=flashes>
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+    <form action = "/upload" method = "post" enctype="multipart/form-data">
+        <label for="img1">Image 1</label>
+        <input type="file" name="img1"  id="img1" accept="image/*"/>
+        <label for="img2">Image 2</label>
+        <input type="file" name="img2" id="img2" accept="image/*"/>
+        <input type="hidden" name="totalimg" id="totalimg" value="2">
+        <input type = "submit" value="Upload">
+        <button>add image</button>
+    </form> 
+
+  <div id="result"></div>
+
+</body>
+</html>
