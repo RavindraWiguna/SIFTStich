@@ -10,5 +10,9 @@
     {% for e in imgSources %}
     <img src="{{ url_for('showStaticUpload', filename=e) }}" alt="">
     {% endfor %}
+
+    <div id="resultstitch">
+        <img src="{{ url_for('showResultImage', filename=resultfileName) }}" alt="">
+    </div>
 </body>
 </html>

@@ -9,9 +9,12 @@ import cv2 # for example
 app = Flask(__name__, static_folder='public')
 
 # set where the upload folder inside instance folder (idk keknya harus instance?)
-uploads_folder =  'uploads'
+uploads_folder = 'uploads'
+results_folder = 'results'
 # create the folders when setting up your app
 os.makedirs(os.path.join(app.instance_path, uploads_folder), exist_ok=True)
+# create the folders when setting up your app
+os.makedirs(os.path.join(app.instance_path, results_folder), exist_ok=True)
 # set so that session have time out
 app.config["SESSION_PERMANENT"] = False
 # set tipe session is filesystem ( since we dont use db )
@@ -26,19 +29,46 @@ def home():
 
 
 @app.route('/result', methods=['GET'])
-def showResult():
+def showResultPage():
     if(not session.get('totalimg')):
         flash("You haven't upload yet")
         redirect('/')
     
     # ok udah ada
-    return render_template('result.html', imgSources=session.get('filePaths'))
-
+    return render_template('result.html', imgSources=session.get('fileNames'), resultfileName=session.get('resultfileName'))
 
 @app.route('/uploads/<path:filename>')
 def showStaticUpload(filename):
     return send_from_directory(os.path.join(app.instance_path, uploads_folder),
                                filename, as_attachment=True)
+
+# sama aja si benernya, cuma tak bedain aja sama upload si result
+@app.route('/result/<path:filename>')
+def showResultImage(filename):
+    return send_from_directory(os.path.join(app.instance_path, results_folder),
+                               filename, as_attachment=True)
+
+# stitch dengan nge set img height to min height
+def doStichVersi1(imgPaths):
+    # read the example img
+    imgs = [cv2.imread(path) for path in imgPaths]
+
+    # find min height
+    min_height = min(img.shape[1] for img in imgs)
+    # resize it to the same height (requirement for stitching)
+    resized = [resizeHeight(img, min_height) for img in imgs]
+
+    stitcher = Stitcher()
+    (result, vis) = stitcher.stitch(resized, showMatches=True)
+
+    # now save it to disk
+    fileName = create_random_name(32)
+    fullName = f'{fileName}.png'
+    filePath = f'./instance/results/{fullName}'
+    cv2.imwrite(filePath, result)
+    # print('DIDDDD')
+    return fullName
+    
 
 
 @app.route('/upload', methods=['POST'])
@@ -61,6 +91,7 @@ def handleUpload():
     
     # simpen dulu all photo
     filePaths = []
+    fileNames = []
     for image in files:
         fileName = create_random_name(32)
         extension = image.filename.rsplit('.', 1)[1] # rsplit split the string from right, and 1 is the maxsplit, so it will be [name, extension]
@@ -68,10 +99,15 @@ def handleUpload():
 
         fullPath = os.path.join(app.instance_path, uploads_folder, fullName)
         image.save(fullPath)
-        filePaths.append(fullName)
+        fileNames.append(fullName)
+        filePaths.append(fullPath)
 
     session["totalimg"] = totalImage
-    session['filePaths'] = filePaths
+    session['fileNames'] = fileNames
+
+    # stitch it and save the location to the session
+    resultfileName = doStichVersi1(filePaths)
+    session['resultfileName'] = resultfileName
     return redirect('/result')
 
     # print(request.data) (kosong)

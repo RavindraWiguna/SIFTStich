@@ -3,6 +3,7 @@ from Stitcher import Stitcher
 import argparse
 import imutils
 import cv2
+import numpy as np
 # construct the argument parse and parse the arguments
 # ap = argparse.ArgumentParser()
 # ap.add_argument("-f", "--first", required=True,
@@ -17,14 +18,23 @@ import cv2
 # imageB = cv2.imread(args["second"])
 imageA = cv2.imread('example_img/first/canyon.jpg')
 imageB = cv2.imread('example_img/second/canyon.jpg')
-imageA = imutils.resize(imageA, width=400)
-imageB = imutils.resize(imageB, width=400)
-
+# imageA = imutils.resize(imageA, width=400)
+# imageB = imutils.resize(imageB, width=400)
+# print(imageA.shape)
 # Check height shape different
 if imageA.shape[0] != imageB.shape[0]:
-    h = min(imageA.shape[0], imageB.shape[0])
-    imageA = imageA[0:h, :]
-    imageB = imageB[0:h, :]
+    h = max(imageA.shape[0], imageB.shape[0])
+    Ablack = np.zeros((h, imageA.shape[1], imageA.shape[2]), dtype=np.uint8)
+    Ablack[0:imageA.shape[0],:] = imageA
+    imageA = Ablack
+
+    Bblack = np.zeros((h, imageB.shape[1], imageB.shape[2]),dtype=np.uint8)
+    Bblack[0:imageB.shape[0],:] = imageB
+    imageB = Bblack
+
+
+    # imageA = imageA[0:h, :]
+    # imageB = imageB[0:h, :]
 
 # stitch the images together to create a panorama
 stitcher = Stitcher()
