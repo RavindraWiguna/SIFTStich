@@ -1,18 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Result</title>
 </head>
+
+<style>
+    img {
+        max-width: 80vw;
+    }
+</style>
+
 <body>
+    <h2>Original Images:</h2>
     {% for e in imgSources %}
     <img src="{{ url_for('showStaticUpload', filename=e) }}" alt="">
     {% endfor %}
 
     <div id="resultstitch">
+        <h2>Stitched Image:</h2>
         <img src="{{ url_for('showResultImage', filename=resultfileName) }}" alt="">
     </div>
 </body>
+
 </html>

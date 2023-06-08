@@ -4,7 +4,7 @@ SYMBOLS_UNIVERSE = [chr(ord('a')+i) for i in range(26)]
 SYMBOLS_UNIVERSE.extend([chr(ord('A')+i) for i in range(26)])
 SYMBOLS_UNIVERSE.extend([chr(ord('0')+i) for i in range(10)])
 SYMBOLS_UNIVERSE.extend(['-'])
-IMAGE_EXTENSION = ('png', 'jpg')
+IMAGE_EXTENSION = ('png', 'jpg', 'jpeg')
 
 def create_random_name(length):
     name = ""

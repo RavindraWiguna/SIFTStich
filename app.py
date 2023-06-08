@@ -59,15 +59,19 @@ def doStichVersi1(imgPaths):
     resized = [resizeHeight(img, min_height) for img in imgs]
 
     stitcher = Stitcher()
-    (result, vis) = stitcher.stitch(resized, showMatches=True)
+    res = stitcher.stitch(resized, showMatches=True)
 
-    # now save it to disk
-    fileName = create_random_name(32)
-    fullName = f'{fileName}.png'
-    filePath = f'./instance/results/{fullName}'
-    cv2.imwrite(filePath, result)
-    # print('DIDDDD')
-    return fullName
+    if res is not None:
+        (result, vis) = res
+        # now save it to disk
+        fileName = create_random_name(32)
+        fullName = f'{fileName}.png'
+        filePath = f'./instance/results/{fullName}'
+        cv2.imwrite(filePath, result)
+        # print('DIDDDD')
+        return fullName
+    
+    return None
     
 
 
@@ -107,6 +111,11 @@ def handleUpload():
 
     # stitch it and save the location to the session
     resultfileName = doStichVersi1(filePaths)
+
+    if resultfileName is None:
+        flash('Keypoint matches is not enough. Images can\'t be stitched')
+        return redirect('/')
+
     session['resultfileName'] = resultfileName
     return redirect('/result')
 

@@ -1,6 +1,7 @@
 import numpy as np
 import imutils
 import cv2
+from backend.cv_util import resizeHeight
 
 
 class Stitcher:
@@ -12,6 +13,10 @@ class Stitcher:
 		# unpack the images, then detect keypoints and extract
 		# local invariant descriptors from them
 		(imageB, imageA) = images
+		if imageA.shape[1] > 720:
+			imageA = resizeHeight(imageA, 720)
+		if imageB.shape[1] > 720:
+			imageB = resizeHeight(imageB, 720)
 		(kpsA, featuresA) = self.detectAndDescribe(imageA)
 		(kpsB, featuresB) = self.detectAndDescribe(imageB)
 		# match features between the two images
@@ -74,7 +79,9 @@ class Stitcher:
 				matches.append((m[0].trainIdx, m[0].queryIdx))
 		
         # computing a homography requires at least 4 matches
-		if len(matches) > 4:
+		print('check match:')
+		print(len(matches), flush=True)
+		if len(matches) > 128:
 			# construct the two sets of points
 			ptsA = np.float32([kpsA[i] for (_, i) in matches])
 			ptsB = np.float32([kpsB[i] for (i, _) in matches])
