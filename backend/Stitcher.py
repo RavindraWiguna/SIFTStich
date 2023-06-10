@@ -1,7 +1,7 @@
 import numpy as np
 import imutils
 import cv2
-from backend.cv_util import resizeHeight
+from backend.cv_util import resizeHeight, crop_black_pixels
 
 
 class Stitcher:
@@ -32,6 +32,10 @@ class Stitcher:
 		result = cv2.warpPerspective(imageA, H,
 			(imageA.shape[1] + imageB.shape[1], imageA.shape[0]))
 		result[0:imageB.shape[0], 0:imageB.shape[1]] = imageB
+
+		# crop the black part or 0 value pixel
+		result = crop_black_pixels(result)
+
 		# check to see if the keypoint matches should be visualized
 		if showMatches:
 			vis = self.drawMatches(imageA, imageB, kpsA, kpsB, matches,

@@ -9,21 +9,40 @@
 </head>
 
 <style>
-    img {
+    .img-src {
+        max-width: 40vw;
+    }
+
+    .img-res {
         max-width: 80vw;
+    }
+
+    .btn {
+        display: inline-block;
+        padding: 10px 20px;
+        margin: 10px;
+        background-color: #4CAF50;
+        color: white;
+        text-decoration: none;
+        font-size: 18px;
+        border-radius: 4px;
     }
 </style>
 
 <body>
     <h2>Original Images:</h2>
     {% for e in imgSources %}
-    <img src="{{ url_for('showStaticUpload', filename=e) }}" alt="">
+    <img class="img-src" src="{{ url_for('showStaticUpload', filename=e) }}" alt="">
     {% endfor %}
 
     <div id="resultstitch">
         <h2>Stitched Image:</h2>
-        <img src="{{ url_for('showResultImage', filename=resultfileName) }}" alt="">
+        <img class="img-res" src="{{ url_for('showResultImage', filename=resultfileName) }}" alt="">
     </div>
+    <button class="btn" onclick="window.location.href='{{ url_for('showResultImage', filename=resultfileName) }}'"
+        value="Download">
+        Download
+    </button>
 </body>
 
 </html>

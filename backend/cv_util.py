@@ -1,4 +1,5 @@
 import cv2
+import numpy as np
 
 def resizeWidth(img, targetWidth, keepRatio=True):
     h,w = img.shape[0], img.shape[1]
@@ -47,3 +48,20 @@ def matchWidth(imgs):
     # crop all to the same height
     cropped = [img[:,0:min_w] for img in imgs]
     return cropped
+
+def crop_black_pixels(image):
+    # Convert the image to grayscale if it's in color
+    if len(image.shape) == 3:
+        new_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    # Find the indices of non-zero pixels
+    indices = np.nonzero(new_image)
+
+    # Get the minimum and maximum row and column indices
+    min_row, max_row = np.min(indices[0]), np.max(indices[0])
+    min_col, max_col = np.min(indices[1]), np.max(indices[1])
+
+    # Crop the image using the calculated bounds
+    cropped_image = image[min_row:max_row, min_col:max_col]
+
+    return cropped_image
