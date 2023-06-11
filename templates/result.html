@@ -18,10 +18,12 @@
 
     .img-src {
         max-width: 40vw;
+        max-height: 60vh;
     }
 
     .img-res {
         max-width: 80vw;
+        max-height: 120vh;
     }
 
     .btn {
@@ -51,6 +53,16 @@
         value="Download">
         Download
     </button>
+
+    <div id="resultstitch">
+        <h2>Cropped Image:</h2>
+        <img class="img-res" src="{{ url_for('showResultImage', filename=croppedName) }}" alt="">
+    </div>
+    <button class="btn" onclick="window.location.href='{{ url_for('showResultImage', filename=croppedName) }}'"
+        value="Download">
+        Download
+    </button>
+
 </body>
 
 </html>
