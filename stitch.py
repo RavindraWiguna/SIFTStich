@@ -1,5 +1,6 @@
 # import the necessary packages
 from backend.Stitcher import Stitcher
+from backend.cv_util import robustCropImg, crop_black_pixels
 import argparse
 import imutils
 import cv2
@@ -44,4 +45,13 @@ cv2.imshow("Image A", imageA)
 cv2.imshow("Image B", imageB)
 cv2.imshow("Keypoint Matches", vis)
 cv2.imshow("Result", result)
+
+catch1 = robustCropImg(result)
+# a = crop_black_pixels(result)
+
+cv2.imshow('aa', catch1)
+
+
+
+
 cv2.waitKey(0)
