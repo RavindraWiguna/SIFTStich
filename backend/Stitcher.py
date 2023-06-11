@@ -1,7 +1,7 @@
 import numpy as np
 import imutils
 import cv2
-from backend.cv_util import resizeHeight, crop_black_pixels, resizeWidth
+from backend.cv_util import resizeHeight, crop_black_pixels, resizeWidth, robustImgCrop
 
 
 class Stitcher:
@@ -36,15 +36,18 @@ class Stitcher:
 		# crop the black part or 0 value pixel
 		result = crop_black_pixels(result)
 
+		# New lir
+		cropped = robustImgCrop(result)
+
 		# check to see if the keypoint matches should be visualized
 		if showMatches:
 			vis = self.drawMatches(imageA, imageB, kpsA, kpsB, matches,
 				status)
 			# return a tuple of the stitched image and the
 			# visualization
-			return (result, vis)
+			return (result, cropped, vis)
 		# return the stitched image
-		return result
+		return result,cropped
 	
 	def detectAndDescribe(self, image):
 		# convert the image to grayscale
@@ -153,15 +156,18 @@ class StitcherHorizontal:
 		# crop the black part or 0 value pixel
 		result = crop_black_pixels(result)
 
+		# New lir
+		cropped = robustImgCrop(result)
+
 		# check to see if the keypoint matches should be visualized
 		if showMatches:
 			vis = self.drawMatches(imageA, imageB, kpsA, kpsB, matches,
 				status)
 			# return a tuple of the stitched image and the
 			# visualization
-			return (result, vis)
+			return (result,cropped, vis)
 		# return the stitched image
-		return result
+		return result,cropped
 	
 	def detectAndDescribe(self, image):
 		# convert the image to grayscale
