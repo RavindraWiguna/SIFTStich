@@ -9,6 +9,59 @@
       font-family: Arial, sans-serif;
       text-align: center;
       margin-top: 100px;
+      background-color: bisque;
+    }
+
+    input[type=file] {
+      margin: 0px;
+    }
+
+    input[type=file]::file-selector-button {
+      border: 1px solid #000000;
+      padding: 5px;
+      border-radius: 5px;
+      background-color: #eeeeee;
+      transition: 1s;
+    }
+
+    input[type=file]::file-selector-button:hover {
+      background-color: #c3c4c4;
+    }
+
+    button[type=button],
+    input[type=submit] {
+      border: 1px solid #000000;
+      width: 10%;
+      padding: 10px;
+      margin: 20px;
+      border-radius: 5px;
+      background-color: #eeeeee;
+      transition: 1s;
+    }
+
+    button[type=button]:hover,
+    input[type=submit]:hover {
+      background-color: #c3c4c4;
+    }
+
+    form {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      flex-flow: column;
+    }
+
+    .upload-container {
+      background-color: #c3c4c4;
+      border-radius: 5px;
+      border: 2px solid #000000;
+      margin: 10px;
+      padding: 10px;
+      width: 50%;
+    }
+
+    .preview {
+      max-width: 80%;
     }
   </style>
 </head>
@@ -27,17 +80,47 @@
   {% endwith %}
 
   <form action="/upload" method="post" enctype="multipart/form-data">
-    <label for="img1">Image 1</label>
-    <input type="file" name="img1" id="img1" accept="image/*" />
-    <label for="img2">Image 2</label>
-    <input type="file" name="img2" id="img2" accept="image/*" />
+    <div style="display: flex; flex-flow: row; width: 60%;">
+      <div class="upload-container">
+        <div>
+          <label for="img1">Image 1</label>
+          <input type="file" name="img1" id="img1" accept="image/*" onchange="loadImg1(event)" />
+        </div>
+        <img class="preview" id="preview-1">
+      </div>
+      <div class="upload-container">
+        <div>
+          <label for="img2">Image 2</label>
+          <input type="file" name="img2" id="img2" accept="image/*" onchange="loadImg2(event)" />
+        </div>
+        <img class="preview" id="preview-2">
+      </div>
+    </div>
     <input type="hidden" name="totalimg" id="totalimg" value="2">
     <input type="submit" value="Upload">
-    <button type="button">add image</button>
+    <button type="button">Add Image</button>
   </form>
 
   <div id="result"></div>
 
 </body>
+
+<script>
+  var loadImg1 = function (event) {
+    var output = document.getElementById('preview-1');
+    output.src = URL.createObjectURL(event.target.files[0]);
+    output.onload = function () {
+      URL.revokeObjectURL(output.src) // free memory
+    }
+  };
+
+  var loadImg2 = function (event) {
+    var output = document.getElementById('preview-2');
+    output.src = URL.createObjectURL(event.target.files[0]);
+    output.onload = function () {
+      URL.revokeObjectURL(output.src) // free memory
+    }
+  };
+</script>
 
 </html>
