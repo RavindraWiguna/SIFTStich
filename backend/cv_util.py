@@ -1,5 +1,7 @@
 import cv2
 import numpy as np
+from backend.security import create_random_name
+import largestinteriorrectangle as lir
 
 def resizeWidth(img, targetWidth, keepRatio=True):
     h,w = img.shape[0], img.shape[1]
@@ -65,3 +67,43 @@ def crop_black_pixels(image):
     cropped_image = image[min_row:max_row, min_col:max_col]
 
     return cropped_image
+
+def saveImage(img):
+    fileName = create_random_name(32)
+    fullName = f'{fileName}.png'
+    filePath = f'./instance/results/{fullName}'
+    cv2.imwrite(filePath, img)
+    return fullName
+
+def robustImgCrop(img):
+    # using LIR sir, concept is, black background easily differentiated with simple thresholding
+
+    # make it gray for thresholdin
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+    # treshold it
+    ret, threshold = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY)
+
+    # now get the contour from the thresholded img, this contour will be fed to LIR to find LIR
+    contours, hieararchy = cv2.findContours(threshold, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+    # get the maximum contour (incase fond > 1, so just pick the largest)
+    max_cntr = max(contours, key=lambda x:cv2.contourArea(x))
+
+    # convert contour shape into polygon point shape that valid by LIR (1, point, 2) so every point has 2 element x,y
+    # and there are point total of point, and that list is enclosed in a list (1,...)
+    # old shape is point,1,2
+    max_cntr = max_cntr.reshape(1, max_cntr.shape[0], 2)
+
+    # find Largest Interior Rectangle
+    rect = lir.lir(max_cntr)
+
+    # get the topleft, bottom right
+    p1 = lir.pt1(rect)
+    p2 = lir.pt2(rect)
+
+    # now cropit
+    img = img[p1[1]:p2[1],p1[0]:p2[0]]
+    return img
+
+
