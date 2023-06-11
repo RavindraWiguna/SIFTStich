@@ -4,7 +4,6 @@ from backend.Stitcher import Stitcher, StitcherHorizontal
 from backend.cv_util import *
 from backend.security import *
 import os
-import cv2 # for example
 
 app = Flask(__name__, static_folder='public')
 
@@ -35,7 +34,7 @@ def showResultPage():
         redirect('/')
     
     # ok udah ada
-    return render_template('result.html', imgSources=session.get('fileNames'), resultfileName=session.get('resultfileName'))
+    return render_template('result.html', imgSources=session.get('fileNames'), resultfileName=session.get('resultfileName'), croppedName=session.get('croppedName'))
 
 @app.route('/uploads/<path:filename>')
 def showStaticUpload(filename):
@@ -59,17 +58,15 @@ def doStichVersi1(imgPaths):
     resized = [resizeHeight(img, min_height) for img in imgs]
 
     stitcher = Stitcher()
-    res = stitcher.stitch(resized, showMatches=True)
+    res = stitcher.stitch(resized, showMatches=False)
 
     if res is not None:
-        (result, vis) = res
+        (result, cropped) = res
         # now save it to disk
-        fileName = create_random_name(32)
-        fullName = f'{fileName}.png'
-        filePath = f'./instance/results/{fullName}'
-        cv2.imwrite(filePath, result)
+        resultName = saveImage(result)
+        croppedName = saveImage(cropped)
         # print('DIDDDD')
-        return fullName
+        return resultName, croppedName
     
     return None
     
@@ -84,17 +81,15 @@ def doStichVertical(imgPaths):
     resized = [resizeWidth(img, min_width) for img in imgs]
 
     stitcher = StitcherHorizontal()
-    res = stitcher.stitch(resized, showMatches=True)
+    res = stitcher.stitch(resized, showMatches=False)
 
     if res is not None:
-        (result, vis) = res
+        (result, cropped) = res
         # now save it to disk
-        fileName = create_random_name(32)
-        fullName = f'{fileName}.png'
-        filePath = f'./instance/results/{fullName}'
-        cv2.imwrite(filePath, result)
+        resultName = saveImage(result)
+        croppedName = saveImage(cropped)
         # print('DIDDDD')
-        return fullName
+        return resultName, croppedName
     
     return None    
 
@@ -135,15 +130,16 @@ def handleUpload():
 
     # stitch it and save the location to the session
     if(request.form['stitchType']=='horizontal'):
-        resultfileName = doStichVersi1(filePaths)
+        resultfileName,croppedName = doStichVersi1(filePaths)
     elif(request.form['stitchType']=='vertical'):
-        resultfileName = doStichVertical(filePaths)
+        resultfileName,croppedName = doStichVertical(filePaths)
 
     if resultfileName is None:
         flash('Keypoint matches is not enough. Images can\'t be stitched')
         return redirect('/')
 
     session['resultfileName'] = resultfileName
+    session['croppedName'] = croppedName
     return redirect('/result')
 
     # print(request.data) (kosong)
