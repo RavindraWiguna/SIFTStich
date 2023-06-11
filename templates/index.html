@@ -9,7 +9,7 @@
       font-family: Arial, sans-serif;
       text-align: center;
       margin-top: 100px;
-      background-color: bisque;
+      background-color: rgb(255, 228, 196);
     }
 
     input[type=file] {
@@ -63,6 +63,32 @@
     .preview {
       max-width: 80%;
     }
+
+    .stitch-option {
+      margin-bottom: 2px;
+      padding-top:5px;
+      padding-bottom:5px;
+      padding-left: 10px;
+      padding-right: 10px;
+      background-color:  rgb(255, 237, 154);
+      border: solid 2px rgb(88, 88, 88);
+      border-radius: 7px;
+      color: gray;
+      cursor: pointer;
+    }
+
+    #option-container{
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .active{
+      background-color:  rgb(255, 218, 53);
+      border: solid 2px black;
+      border-radius: 7px;
+      color: black;
+    }
   </style>
 </head>
 
@@ -95,7 +121,19 @@
         </div>
         <img class="preview" id="preview-2">
       </div>
+
+      <div id="option-container">
+        <div class="stitch-option active" onclick="changeToActive('horizontal')" id="horizontal">
+          Horizontal
+        </div>
+        <div class="stitch-option" onclick="changeToActive('vertical')" id="vertical">
+          Vertical
+        </div>
+      </div>
+
     </div>
+
+    <input type="hidden" name="stitchType" id="stitchTypeId" value="horizontal">
     <input type="hidden" name="totalimg" id="totalimg" value="2">
     <input type="submit" value="Upload">
     <button type="button">Add Image</button>
@@ -121,6 +159,22 @@
       URL.revokeObjectURL(output.src) // free memory
     }
   };
+
+  function changeToActive(id) {
+    var stateElements = document.getElementsByClassName("stitch-option");
+    for (var i = 0; i < stateElements.length; i++) {
+      stateElements[i].classList.remove("active");
+    }
+    // document.querySelector("." + state).classList.add("active");
+
+    // update the element to be active looking
+    document.getElementById(id).classList.add('active');
+
+    // Perform additional actions based on the selected state
+    let formData = document.getElementById('stitchTypeId');
+    formData.value = id;
+  }
+
 </script>
 
 </html>
