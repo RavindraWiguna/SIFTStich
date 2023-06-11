@@ -1,5 +1,5 @@
 # import the necessary packages
-from Stitcher import Stitcher
+from backend.Stitcher import Stitcher
 import argparse
 import imutils
 import cv2
