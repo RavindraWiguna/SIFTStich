@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, render_template, redirect, session, flash, send_from_directory
 from flask_session import Session
-from backend.Stitcher import Stitcher
+from backend.Stitcher import Stitcher, StitcherHorizontal
 from backend.cv_util import *
 from backend.security import *
 import os
@@ -48,7 +48,7 @@ def showResultImage(filename):
     return send_from_directory(os.path.join(app.instance_path, results_folder),
                                filename, as_attachment=True)
 
-# stitch dengan nge set img height to min height
+# stitch dengan nge set img height to min height (horizontal)
 def doStichVersi1(imgPaths):
     # read the example img
     imgs = [cv2.imread(path) for path in imgPaths]
@@ -73,6 +73,30 @@ def doStichVersi1(imgPaths):
     
     return None
     
+
+def doStichVertical(imgPaths):
+    # read the example img
+    imgs = [cv2.imread(path) for path in imgPaths]
+
+    # find min width
+    min_width = min(img.shape[0] for img in imgs)
+    # resize it to the same width (requirement for stitching)
+    resized = [resizeWidth(img, min_width) for img in imgs]
+
+    stitcher = StitcherHorizontal()
+    res = stitcher.stitch(resized, showMatches=True)
+
+    if res is not None:
+        (result, vis) = res
+        # now save it to disk
+        fileName = create_random_name(32)
+        fullName = f'{fileName}.png'
+        filePath = f'./instance/results/{fullName}'
+        cv2.imwrite(filePath, result)
+        # print('DIDDDD')
+        return fullName
+    
+    return None    
 
 
 @app.route('/upload', methods=['POST'])
@@ -110,7 +134,10 @@ def handleUpload():
     session['fileNames'] = fileNames
 
     # stitch it and save the location to the session
-    resultfileName = doStichVersi1(filePaths)
+    if(request.form['stitchType']=='horizontal'):
+        resultfileName = doStichVersi1(filePaths)
+    elif(request.form['stitchType']=='vertical'):
+        resultfileName = doStichVertical(filePaths)
 
     if resultfileName is None:
         flash('Keypoint matches is not enough. Images can\'t be stitched')
