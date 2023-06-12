@@ -8,7 +8,7 @@ class Stitcher:
 	def __init__(self):
 		# determine if we are using OpenCV v3.X
 		self.isv3 = imutils.is_cv3(or_better=True)
-		
+
 	def stitch(self, images, ratio=0.75, reprojThresh=4.0, showMatches=False):
 		# unpack the images, then detect keypoints and extract
 		# local invariant descriptors from them
@@ -22,6 +22,8 @@ class Stitcher:
 		# match features between the two images
 		M = self.matchKeypoints(kpsA, kpsB,
 			featuresA, featuresB, ratio, reprojThresh)
+
+# 		print('meng lese m', flush=True)
 		# if the match is None, then there aren't enough matched
 		# keypoints to create a panorama
 		if M is None:
@@ -33,12 +35,15 @@ class Stitcher:
 			(imageA.shape[1] + imageB.shape[1], imageA.shape[0]))
 		result[0:imageB.shape[0], 0:imageB.shape[1]] = imageB
 
+# 		print('mengdone wrap', flush=True)
 		# crop the black part or 0 value pixel
 		result = crop_black_pixels(result)
 
 		# New lir
+# 		print('LIr si ilir ilir', flush=True)
 		cropped = robustImgCrop(result)
 
+# 		print('ama lo le', flush=True)
 		# check to see if the keypoint matches should be visualized
 		if showMatches:
 			vis = self.drawMatches(imageA, imageB, kpsA, kpsB, matches,
@@ -48,7 +53,7 @@ class Stitcher:
 			return (result, cropped, vis)
 		# return the stitched image
 		return result,cropped
-	
+
 	def detectAndDescribe(self, image):
 		# convert the image to grayscale
 		gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -70,7 +75,7 @@ class Stitcher:
 		kps = np.float32([kp.pt for kp in kps])
 		# return a tuple of keypoints and features
 		return (kps, features)
-	
+
 	def matchKeypoints(self, kpsA, kpsB, featuresA, featuresB,
 		ratio, reprojThresh):
 		# compute the raw matches and initialize the list of actual
@@ -84,7 +89,7 @@ class Stitcher:
 			# other (i.e. Lowe's ratio test)
 			if len(m) == 2 and m[0].distance < m[1].distance * ratio:
 				matches.append((m[0].trainIdx, m[0].queryIdx))
-		
+
         # computing a homography requires at least 4 matches
 		print('check match:')
 		print(len(matches), flush=True)
@@ -100,7 +105,7 @@ class Stitcher:
 			return (matches, H, status)
 		# otherwise, no homograpy could be computed
 		return None
-	
+
 	def drawMatches(self, imageA, imageB, kpsA, kpsB, matches, status):
 		# initialize the output visualization image
 		(hA, wA) = imageA.shape[:2]
@@ -119,14 +124,14 @@ class Stitcher:
 				cv2.line(vis, ptA, ptB, (0, 255, 0), 1)
 		# return the visualization
 		return vis
-	
+
 
 
 class StitcherHorizontal:
 	def __init__(self):
 		# determine if we are using OpenCV v3.X
 		self.isv3 = imutils.is_cv3(or_better=True)
-		
+
 	def stitch(self, images, ratio=0.75, reprojThresh=4.0, showMatches=False):
 		# unpack the images, then detect keypoints and extract
 		# local invariant descriptors from them
@@ -168,7 +173,7 @@ class StitcherHorizontal:
 			return (result,cropped, vis)
 		# return the stitched image
 		return result,cropped
-	
+
 	def detectAndDescribe(self, image):
 		# convert the image to grayscale
 		gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -190,7 +195,7 @@ class StitcherHorizontal:
 		kps = np.float32([kp.pt for kp in kps])
 		# return a tuple of keypoints and features
 		return (kps, features)
-	
+
 	def matchKeypoints(self, kpsA, kpsB, featuresA, featuresB,
 		ratio, reprojThresh):
 		# compute the raw matches and initialize the list of actual
@@ -204,7 +209,7 @@ class StitcherHorizontal:
 			# other (i.e. Lowe's ratio test)
 			if len(m) == 2 and m[0].distance < m[1].distance * ratio:
 				matches.append((m[0].trainIdx, m[0].queryIdx))
-		
+
         # computing a homography requires at least 4 matches
 		print('check match:')
 		print(len(matches), flush=True)
@@ -220,7 +225,7 @@ class StitcherHorizontal:
 			return (matches, H, status)
 		# otherwise, no homograpy could be computed
 		return None
-	
+
 	def drawMatches(self, imageA, imageB, kpsA, kpsB, matches, status):
 		# initialize the output visualization image
 		(hA, wA) = imageA.shape[:2]

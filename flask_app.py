@@ -32,7 +32,7 @@ def showResultPage():
     if(not session.get('totalimg')):
         flash("You haven't upload yet")
         redirect('/')
-    
+
     # ok udah ada
     return render_template('result.html', imgSources=session.get('fileNames'), resultfileName=session.get('resultfileName'), croppedName=session.get('croppedName'))
 
@@ -59,17 +59,18 @@ def doStichVersi1(imgPaths):
 
     stitcher = Stitcher()
     res = stitcher.stitch(resized, showMatches=False)
-
+    # print(type(res), flush=True)
     if res is not None:
         (result, cropped) = res
         # now save it to disk
-        resultName = saveImage(result)
-        croppedName = saveImage(cropped)
+        resultName = saveImage(result,os.path.join(app.instance_path, results_folder))
+        croppedName = saveImage(cropped,os.path.join(app.instance_path, results_folder))
         # print('DIDDDD')
         return resultName, croppedName
-    
+
+    # print('well that is nothing', flush=True)
     return None
-    
+
 
 def doStichVertical(imgPaths):
     # read the example img
@@ -86,12 +87,13 @@ def doStichVertical(imgPaths):
     if res is not None:
         (result, cropped) = res
         # now save it to disk
-        resultName = saveImage(result)
-        croppedName = saveImage(cropped)
+        # print('stitching')
+        resultName = saveImage(result,os.path.join(app.instance_path, results_folder))
+        croppedName = saveImage(cropped,os.path.join(app.instance_path, results_folder))
         # print('DIDDDD')
         return resultName, croppedName
-    
-    return None    
+
+    return None
 
 
 @app.route('/upload', methods=['POST'])
@@ -101,7 +103,7 @@ def handleUpload():
     files = []
     for i in range(totalImage):
         image = request.files[f'img{i+1}']
-    
+
         if image.filename == '':
             flash('Some photo are not selected yet, Please select all photo')
             return redirect('/')
@@ -111,7 +113,7 @@ def handleUpload():
             return redirect('/')
 
         files.append(image)
-    
+
     # simpen dulu all photo
     filePaths = []
     fileNames = []

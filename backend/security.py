@@ -7,7 +7,7 @@ SYMBOLS_UNIVERSE.extend(['-'])
 IMAGE_EXTENSION = ('png', 'jpg', 'jpeg')
 
 def create_random_name(length):
-    name = ""
+    name = "r"
     for _ in range(length):
         name += random.choice(SYMBOLS_UNIVERSE)
     return name
