@@ -3,6 +3,8 @@ import numpy as np
 from backend.security import create_random_name
 import os
 
+# COMMENT THIS SECTION IF ON LOCAL MAHINE
+
 # check if ada path (makin close to solution) ( ga perlu tapi isi aja)
 os.environ['LD_LIBRARY_PATH']="/home/ravindrawiguna/.local/lib/"
 
@@ -25,6 +27,8 @@ config.THREADING_LAYER = 'safe'
 
 # print('YO PLEASE BE SAFE')
 # print("Threading layer chosen:", threading_layer())
+
+#=========================================================================#
 
 import largestinteriorrectangle as lir
 import os
