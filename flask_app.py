@@ -48,10 +48,14 @@ def showResultImage(filename):
                                filename, as_attachment=True)
 
 # stitch dengan nge set img height to min height (horizontal)
-def doStichVersi1(imgPaths):
+def doStich(imgPaths, isVertical):
     # read the example img
     imgs = [cv2.imread(path) for path in imgPaths]
 
+    if isVertical:
+        for img in imgs:
+            img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
+    
     # find min height
     min_height = min(img.shape[1] for img in imgs)
     # resize it to the same height (requirement for stitching)
@@ -61,6 +65,10 @@ def doStichVersi1(imgPaths):
     res = stitcher.stitch(resized, showMatches=False)
     # print(type(res), flush=True)
     if res is not None:
+        if isVertical:
+            for img in res:
+                img = cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE)
+            
         (result, cropped) = res
         # now save it to disk
         resultName = saveImage(result,os.path.join(app.instance_path, results_folder))
@@ -70,31 +78,6 @@ def doStichVersi1(imgPaths):
 
     # print('well that is nothing', flush=True)
     return None
-
-
-def doStichVertical(imgPaths):
-    # read the example img
-    imgs = [cv2.imread(path) for path in imgPaths]
-
-    # find min width
-    min_width = min(img.shape[0] for img in imgs)
-    # resize it to the same width (requirement for stitching)
-    resized = [resizeWidth(img, min_width) for img in imgs]
-
-    stitcher = StitcherHorizontal()
-    res = stitcher.stitch(resized, showMatches=False)
-
-    if res is not None:
-        (result, cropped) = res
-        # now save it to disk
-        # print('stitching')
-        resultName = saveImage(result,os.path.join(app.instance_path, results_folder))
-        croppedName = saveImage(cropped,os.path.join(app.instance_path, results_folder))
-        # print('DIDDDD')
-        return resultName, croppedName
-
-    return None
-
 
 @app.route('/upload', methods=['POST'])
 def handleUpload():
@@ -132,9 +115,9 @@ def handleUpload():
 
     # stitch it and save the location to the session
     if(request.form['stitchType']=='horizontal'):
-        resultfileName,croppedName = doStichVersi1(filePaths)
+        resultfileName,croppedName = doStich(filePaths, isVertical=False)
     elif(request.form['stitchType']=='vertical'):
-        resultfileName,croppedName = doStichVertical(filePaths)
+        resultfileName,croppedName = doStich(filePaths, isVertical=True)
 
     if resultfileName is None:
         flash('Keypoint matches is not enough. Images can\'t be stitched')
