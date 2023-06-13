@@ -62,7 +62,7 @@ def doStich(imgPaths, isVertical):
     resized = [resizeHeight(img, min_height) for img in imgs]
 
     stitcher = Stitcher()
-    res = stitcher.stitch(resized, showMatches=False)
+    res = stitcher.stitch(resized, isVertical, showMatches=False)
     # print(type(res), flush=True)
     if res is not None:
         if isVertical:
