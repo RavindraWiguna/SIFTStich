@@ -139,7 +139,7 @@ class StitcherHorizontal:
 		if imageA.shape[0] > 1280:
 			imageA = resizeWidth(imageA, 1280)
 		if imageB.shape[0] > 1280:
-			imageB = resizeHeight(imageB, 1280)
+			imageB = resizeWidth(imageB, 1280)
 
 
 		(kpsA, featuresA) = self.detectAndDescribe(imageA)
